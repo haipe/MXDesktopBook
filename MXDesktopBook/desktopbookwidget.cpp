@@ -1,4 +1,4 @@
-#include "desktopbookwidget.h"
+﻿#include "desktopbookwidget.h"
 #include "ui_desktopbookwidget.h"
 
 DesktopBookWidget::DesktopBookWidget(QWidget *parent) :
@@ -49,7 +49,7 @@ void DesktopBookWidget::showText()
     color = QColor::fromHsl(rand() % 360, rand() % 256, rand() % 200);
     pe.setColor(QPalette::WindowText, color);
     ui->label_text->setPalette(pe);
-    QString sql = "SELECT \n.\t1234\n sentence FROM muxin WHERE id = ";
+    QString sql = QStringLiteral("大苏打大苏打撒旦 ");
 
     ui->label_text->setText(sql);
 }

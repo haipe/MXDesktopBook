@@ -50,3 +50,29 @@ compile_commands.json
 
 # QtCreator local machine specific files for imported projects
 *creator.user*
+
+
+
+###########
+*.suo
+*.sdf
+*.user
+*.opensdf
+*.ipch
+*.aps
+*.localstorage
+*.iobj
+*.pch
+*.log
+*.ilk
+*.exp
+*.obj
+*.ipdb
+*.bsc
+*.sbr
+*.tlog
+.tlog/
+.vscode/
+bin/win32/
+bin/win32/
+MiniBlink/
