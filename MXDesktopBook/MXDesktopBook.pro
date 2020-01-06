@@ -17,6 +17,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 MX_GITHUB_PATH = $${PWD}/../../
 
+INCLUDEPATH += $${MX_GITHUB_PATH}/MXToolkit/common/
+INCLUDEPATH += $${MX_GITHUB_PATH}/MXToolkit/webrequest/
+
 INCLUDEPATH += $${MX_GITHUB_PATH}/MiniBlink/
 INCLUDEPATH += $${MX_GITHUB_PATH}/MXPython/
 
@@ -27,14 +30,11 @@ INCLUDEPATH += $${MX_GITHUB_PATH}/MXPython/
 SOURCES += \
     desktopbookwidget.cpp \
     main.cpp \
-    mainwindow.cpp \
-    miniblinkwidget.cpp
+    mainwindow.cpp
 
 HEADERS += \
-    _qt_include.h \
     desktopbookwidget.h \
-    mainwindow.h \
-    miniblinkwidget.h
+    mainwindow.h
 
 FORMS += \
     desktopbookwidget.ui \

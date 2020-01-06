@@ -1,5 +1,8 @@
 ﻿#include "desktopbookwidget.h"
 #include "ui_desktopbookwidget.h"
+#include <QMouseEvent>
+#include <QDebug>
+
 
 DesktopBookWidget::DesktopBookWidget(QWidget *parent) :
     QWidget(parent),
@@ -13,11 +16,63 @@ DesktopBookWidget::DesktopBookWidget(QWidget *parent) :
     ui->label_text->setFont(font);
     ui->label_text->setWordWrap(true);
 
+    webrequest_lib = new QLibrary("MXWebRequest.dll");
+    if (webrequest_lib->load())
+    {
+        mx_dll_function.mx_dll_init = (mxtoolkit::MX_DLL_FUNCTION_TYPE(mx_dll_init))webrequest_lib->resolve("mx_dll_init");
+        mx_dll_function.mx_dll_uninit = (mxtoolkit::MX_DLL_FUNCTION_TYPE(mx_dll_uninit))webrequest_lib->resolve("mx_dll_uninit");
+        mx_dll_function.mx_dll_all_export = (mxtoolkit::MX_DLL_FUNCTION_TYPE(mx_dll_all_export))webrequest_lib->resolve("mx_dll_all_export");
+        mx_dll_function.mx_dll_get_interface = (mxtoolkit::MX_DLL_FUNCTION_TYPE(mx_dll_get_interface))webrequest_lib->resolve("mx_dll_get_interface");
+    }
+
+    if(mx_dll_function.mx_dll_init)
+        mx_dll_function.mx_dll_init();
+
+    mxtoolkit::mx_dll_export_info* all_export = nullptr;
+    if(mx_dll_function.mx_dll_all_export)
+    {
+        mx_dll_function.mx_dll_all_export(&all_export);
+    }
+
+    mxtoolkit::mx_export_interface_info iInfo = {"WebRequest","202001061800"};
+    if(mx_dll_function.mx_dll_get_interface)
+    {
+        mx_dll_function.mx_dll_get_interface(&iInfo,(void**)&webrequest);
+    }
+
+    if(webrequest)
+    {
+        webrequest->Initialize(this);
+
+        mxwebrequest::Request rq;
+        rq.request_type = mxwebrequest::REQUEST_TYPE_GET;
+        rq.request_protocol = mxwebrequest::REQUEST_PROTOCOLTYPE_HTTPS;
+        rq.respond_data_protocol = mxwebrequest::RESPOND_PROTOCOL_JSON;
+        rq.request_host = (CHAR*)"https://v1.hitokoto.cn/";
+
+       qDebug() << "rquest ID:" << webrequest->AsynRequest(&rq);
+    }
+
     showText();
 }
 
 DesktopBookWidget::~DesktopBookWidget()
 {
+    if(webrequest)
+    {
+        webrequest->Uninstall();
+        webrequest = nullptr;
+    }
+
+    if(mx_dll_function.mx_dll_uninit)
+    {
+        mx_dll_function.mx_dll_uninit();
+        mx_dll_function = {nullptr,nullptr,nullptr,nullptr};
+    }
+
+    if(webrequest_lib && webrequest_lib->isLoaded())
+        webrequest_lib->unload();
+
     delete ui;
 }
 
@@ -42,6 +97,14 @@ void DesktopBookWidget::mouseMoveEvent(QMouseEvent *event)
         move(event->globalPos() - position);
         event->accept();
     }
+}
+
+void DesktopBookWidget::OnCompleteRespond(mxtoolkit::uint32 nID, mxtoolkit::uint32 nCode, char *pData, mxtoolkit::uint32 nSize)
+{
+    qDebug() << "rquest ID:" << nID
+             << ",Code:" << nCode
+             << ",res:" << pData
+             << ",resSize:" << nSize;
 }
 
 void DesktopBookWidget::showText()

@@ -73,6 +73,5 @@ compile_commands.json
 *.tlog
 .tlog/
 .vscode/
-bin/win32/
-bin/win32/
-MiniBlink/
+bin/
+bin/
