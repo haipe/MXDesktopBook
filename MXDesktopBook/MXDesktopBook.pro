@@ -29,16 +29,13 @@ INCLUDEPATH += $${MX_GITHUB_PATH}/MXPython/
 
 SOURCES += \
     desktopbookwidget.cpp \
-    main.cpp \
-    mainwindow.cpp
+    main.cpp
 
 HEADERS += \
-    desktopbookwidget.h \
-    mainwindow.h
+    desktopbookwidget.h
 
 FORMS += \
-    desktopbookwidget.ui \
-    mainwindow.ui
+    desktopbookwidget.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

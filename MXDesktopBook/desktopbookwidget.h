@@ -7,6 +7,20 @@
 #include "MXDllExportDefine.h"
 
 
+struct ZhengNengLiangInfo
+{
+    ZhengNengLiangInfo()
+    {
+    }
+
+    unsigned int id;
+    QString title;
+    QString type;
+    QString from;
+    QString creator;
+    QString createDate;
+};
+
 namespace Ui {
 class DesktopBookWidget;
 }
@@ -16,20 +30,31 @@ class DesktopBookWidget
         , public mxwebrequest::IRespondNotify
 {
     Q_OBJECT
-
 public:
     explicit DesktopBookWidget(QWidget *parent = nullptr);
     virtual ~DesktopBookWidget() override;
 
+    void init();
+
+signals:
+    void onZhengNengLiang(const ZhengNengLiangInfo&);
+    void onClose();
+
 protected:
+    void loadNew();
+
     virtual void mousePressEvent(QMouseEvent *event) override;
     virtual void mouseMoveEvent(QMouseEvent *event) override;
 
     virtual void OnHeaderRespond(uint32 nID,char *pData,uint32 nSize) override{};
     virtual void OnDataRespond(uint32 nID,char *pData,uint32 nSize) override{};
     virtual void OnCompleteRespond(uint32 nID,uint32 nCode,char *pData,uint32 nSize) override;
-private slots:
-    void showText();
+
+protected slots:
+    void on_znl_come(const ZhengNengLiangInfo&);
+    void on_load_timeout();
+    void on_need_load_new();
+
 
 private:
     Ui::DesktopBookWidget *ui;
@@ -45,6 +70,8 @@ private:
     mxtoolkit::mx_dll_export mx_dll_function;
 
     mxwebrequest::IWebRequest* webrequest = nullptr;
+
+    unsigned int load_request_id = 0;
 };
 
 #endif // DESKTOPBOOKWIDGET_H

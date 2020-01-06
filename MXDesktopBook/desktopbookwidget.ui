@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>411</width>
+    <height>72</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -32,7 +32,20 @@
    <item>
     <widget class="QLabel" name="label_text">
      <property name="text">
-      <string>TextLabel</string>
+      <string>loading</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_creator">
+     <property name="text">
+      <string>loading</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
     </widget>
    </item>
