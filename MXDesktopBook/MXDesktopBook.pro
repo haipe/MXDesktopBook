@@ -39,6 +39,12 @@ FORMS += \
 
 RC_ICONS = logo.ico
 
+VERSION = 1.0.0.202001071800
+QMAKE_TARGET_PRODUCT = MXDesktopBook
+QMAKE_TARGET_COMPANY = www.wasai.life
+QMAKE_TARGET_DESCRIPTION = MXDesktopBook
+QMAKE_TARGET_COPYRIGHT = www.wasai.life
+
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin

@@ -17,14 +17,15 @@ DesktopBookWidget::DesktopBookWidget(QWidget *parent) :
 
     qRegisterMetaType<ZhengNengLiangInfo>("ZhengNengLiangInfo");
 
-    font.setPointSize(22);
+    font.setPointSize(18);
     font.setBold(true);
 
     ui->label_text->setFont(font);
     ui->label_text->setWordWrap(true);
 
-    font.setPointSize(16);
+    font.setPointSize(14);
     font.setBold(true);
+    ui->label_creator->setFont(font);
     ui->label_creator->setWordWrap(true);
 
     webrequest_lib = new QLibrary("MXWebRequest.dll");
@@ -102,9 +103,10 @@ void DesktopBookWidget::loadNew()
 
         load_request_id = webrequest->AsynRequest(&rq);
         qDebug() << "rquest ID:" << load_request_id;
-    }
 
-    QTimer::singleShot(3000,this,SLOT(on_load_timeout()));
+        timeout_check_request_id = load_request_id;
+        QTimer::singleShot(3000,this,SLOT(on_load_timeout()));
+    }
 }
 
 void DesktopBookWidget::mousePressEvent(QMouseEvent *event)
@@ -115,9 +117,27 @@ void DesktopBookWidget::mousePressEvent(QMouseEvent *event)
         position = event->globalPos() - frameGeometry().topLeft();
         event->accept();
     }
-    else if (event->button() == Qt::RightButton)
+}
+
+void DesktopBookWidget::mouseDoubleClickEvent(QMouseEvent* event)
+{
+    if(event->button()==Qt::LeftButton)
+    {
+        qDebug() << "leftbutton DBClick :" << load_request_id;
+        if(load_request_id == 0)
+            loadNew();
+    }
+    if(event->button()==Qt::RightButton)
     {
         close();
+        if(webrequest)
+        {
+            webrequest->Uninstall();
+        }
+
+        if(mx_dll_function.mx_dll_uninit)
+            mx_dll_function.mx_dll_uninit();
+
         emit onClose();
     }
 }
@@ -131,7 +151,7 @@ void DesktopBookWidget::mouseMoveEvent(QMouseEvent *event)
     }
 }
 
-void DesktopBookWidget::OnCompleteRespond(mxtoolkit::uint32 nID, mxtoolkit::uint32 nCode, char *pData, mxtoolkit::uint32 nSize)
+void DesktopBookWidget::OnCompleteRespond(mxtoolkit::uint32 nID, mxtoolkit::uint32 nCode,const char *pData, mxtoolkit::uint32 nSize)
 {
     if(load_request_id == 0)
         return;
@@ -178,14 +198,15 @@ void DesktopBookWidget::on_znl_come(const ZhengNengLiangInfo& info)
     ui->label_text->setText(info.title);
     ui->label_creator->setText(info.creator);
 
-    QTimer::singleShot(10* 1000,this,SLOT(on_need_load_new()));
+    //5分钟更新一个
+    QTimer::singleShot(5 * 60 * 1000,this,SLOT(on_need_load_new()));
 }
 
 void DesktopBookWidget::on_load_timeout()
 {
-    qDebug() << "DesktopBookWidget::on_load_timeout" << load_request_id;
+    qDebug() << "DesktopBookWidget::on_load_timeout" << load_request_id << ": " << timeout_check_request_id;
     //超时了，重新请求
-    if(load_request_id != 0)
+    if(load_request_id == timeout_check_request_id)
     {
         load_request_id = 0;
         loadNew();

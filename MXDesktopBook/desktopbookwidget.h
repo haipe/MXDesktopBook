@@ -45,10 +45,9 @@ protected:
 
     virtual void mousePressEvent(QMouseEvent *event) override;
     virtual void mouseMoveEvent(QMouseEvent *event) override;
+    virtual void mouseDoubleClickEvent(QMouseEvent *event) override;
 
-    virtual void OnHeaderRespond(uint32 nID,char *pData,uint32 nSize) override{};
-    virtual void OnDataRespond(uint32 nID,char *pData,uint32 nSize) override{};
-    virtual void OnCompleteRespond(uint32 nID,uint32 nCode,char *pData,uint32 nSize) override;
+    virtual void OnCompleteRespond(uint32 nID,uint32 nCode, const char *pData,uint32 nSize) override;
 
 protected slots:
     void on_znl_come(const ZhengNengLiangInfo&);
@@ -71,6 +70,7 @@ private:
 
     mxwebrequest::IWebRequest* webrequest = nullptr;
 
+    unsigned int timeout_check_request_id = 0;
     unsigned int load_request_id = 0;
 };
 
