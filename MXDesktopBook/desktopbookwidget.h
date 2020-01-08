@@ -66,7 +66,7 @@ private:
     QColor color;
 
     QLibrary* webrequest_lib;
-    mxtoolkit::mx_dll_export mx_dll_function;
+    mxtoolkit::MXDllObject mx_dll_object;
 
     mxwebrequest::IWebRequest* webrequest = nullptr;
 

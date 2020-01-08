@@ -31,19 +31,19 @@ DesktopBookWidget::DesktopBookWidget(QWidget *parent) :
     webrequest_lib = new QLibrary("MXWebRequest.dll");
     if (webrequest_lib->load())
     {
-        mx_dll_function.mx_dll_init = (mxtoolkit::MX_DLL_FUNCTION_TYPE(mx_dll_init))webrequest_lib->resolve("mx_dll_init");
-        mx_dll_function.mx_dll_uninit = (mxtoolkit::MX_DLL_FUNCTION_TYPE(mx_dll_uninit))webrequest_lib->resolve("mx_dll_uninit");
-        mx_dll_function.mx_dll_all_export = (mxtoolkit::MX_DLL_FUNCTION_TYPE(mx_dll_all_export))webrequest_lib->resolve("mx_dll_all_export");
-        mx_dll_function.mx_dll_get_interface = (mxtoolkit::MX_DLL_FUNCTION_TYPE(mx_dll_get_interface))webrequest_lib->resolve("mx_dll_get_interface");
+        mx_dll_object.dllInit = (mxtoolkit::MX_DLL_FUNCTION_TYPE(DllInit))webrequest_lib->resolve("mxDllInit");
+        mx_dll_object.dllUninit = (mxtoolkit::MX_DLL_FUNCTION_TYPE(DllUninit))webrequest_lib->resolve("mxDllUninit");
+        mx_dll_object.getExportInfo = (mxtoolkit::MX_DLL_FUNCTION_TYPE(GetExportInfo))webrequest_lib->resolve("mxGetExportInfo");
+        mx_dll_object.getInterfaceInfo = (mxtoolkit::MX_DLL_FUNCTION_TYPE(GetInterfaceInfo))webrequest_lib->resolve("mxGetInterfaceInfo");
     }
 
-    if(mx_dll_function.mx_dll_init)
-        mx_dll_function.mx_dll_init();
+    if(mx_dll_object.dllInit)
+        mx_dll_object.dllInit();
 
-    mxtoolkit::mx_dll_export_info* all_export = nullptr;
-    if(mx_dll_function.mx_dll_all_export)
+    mxtoolkit::MXDllExportInfo* all_export = nullptr;
+    if(mx_dll_object.getExportInfo)
     {
-        mx_dll_function.mx_dll_all_export(&all_export);
+        mx_dll_object.getExportInfo(&all_export);
     }
 
     loadNew();
@@ -57,10 +57,10 @@ DesktopBookWidget::~DesktopBookWidget()
         webrequest = nullptr;
     }
 
-    if(mx_dll_function.mx_dll_uninit)
+    if(mx_dll_object.dllUninit)
     {
-        mx_dll_function.mx_dll_uninit();
-        mx_dll_function = {nullptr,nullptr,nullptr,nullptr};
+        mx_dll_object.dllUninit();
+        mx_dll_object = {nullptr,nullptr,nullptr,nullptr};
     }
 
     if(webrequest_lib && webrequest_lib->isLoaded())
@@ -84,10 +84,10 @@ void DesktopBookWidget::init()
 
 void DesktopBookWidget::loadNew()
 {
-    mxtoolkit::mx_export_interface_info iInfo = {"WebRequest","202001061800"};
-    if(!webrequest && mx_dll_function.mx_dll_get_interface)
+    mxtoolkit::MXInterfaceInfo iInfo = {"WebRequest","202001061800"};
+    if(!webrequest && mx_dll_object.getInterfaceInfo)
     {
-        mx_dll_function.mx_dll_get_interface(&iInfo,(void**)&webrequest);
+        mx_dll_object.getInterfaceInfo(&iInfo,(void**)&webrequest);
 
         if(webrequest)
             webrequest->Initialize(this);
@@ -135,8 +135,8 @@ void DesktopBookWidget::mouseDoubleClickEvent(QMouseEvent* event)
             webrequest->Uninstall();
         }
 
-        if(mx_dll_function.mx_dll_uninit)
-            mx_dll_function.mx_dll_uninit();
+        if(mx_dll_object.dllUninit)
+            mx_dll_object.dllUninit();
 
         emit onClose();
     }
